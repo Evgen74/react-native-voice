@@ -122,15 +122,16 @@ Voice.isRecognizing()       | Return if the SpeechRecognizer is recognizing.    
 
 <p align="center">Callbacks that are invoked when a native event emitted.</p>
 
-Event Name                          | Description                                            | Event                                           | Platform
------------------------------------ | ------------------------------------------------------ | ----------------------------------------------- | --------
-Voice.onSpeechStart(event)          | Invoked when `.start()` is called without error.       | `{ error: false }`                              | Android, iOS
-Voice.onSpeechRecognized(event)     | Invoked when speech is recognized.                     | `{ error: false }`                              | Android, iOS
-Voice.onSpeechEnd(event)            | Invoked when SpeechRecognizer stops recognition.       | `{ error: false }`                              | Android, iOS
-Voice.onSpeechError(event)          | Invoked when an error occurs.                          | `{ error: Description of error as string }`     | Android, iOS
-Voice.onSpeechResults(event)        | Invoked when SpeechRecognizer is finished recognizing. | `{ value: [..., 'Speech recognized'] }`         | Android, iOS
-Voice.onSpeechPartialResults(event) | Invoked when any results are computed.                 | `{ value: [..., 'Partial speech recognized'] }` | Android, iOS
-Voice.onSpeechVolumeChanged(event)  | Invoked when pitch that is recognized changed.         | `{ value: pitch in dB }`                        | Android
+Event Name                          | Description                                                 | Event                                           | Platform
+----------------------------------- | ----------------------------------------------------------- | ----------------------------------------------- | --------
+Voice.onSpeechStart(event)          | Invoked when `.start()` is called without error.            | `{ error: false }`                              | Android, iOS
+Voice.onSpeechRecognized(event)     | Invoked when speech is recognized.                          | `{ error: false }`                              | Android, iOS
+Voice.onSpeechEnd(event)            | Invoked when SpeechRecognizer stops recognition.            | `{ error: false }`                              | Android, iOS
+Voice.onSpeechError(event)          | Invoked when an error occurs.                               | `{ error: Description of error as string }`     | Android, iOS
+Voice.onSpeechResults(event)        | Invoked when SpeechRecognizer is finished recognizing.      | `{ value: [..., 'Speech recognized'] }`         | Android, iOS
+Voice.onSpeechPartialResults(event) | Invoked when any results are computed.                      | `{ value: [..., 'Partial speech recognized'] }` | Android, iOS
+Voice.onSpeechVolumeChanged(event)  | Invoked when pitch that is recognized changed. (do not use) | `{ value: pitch in dB }`                        | Android
+Voice.onSpeechVolumeLevel(event)    | Invoked when pitch that is recognized changed.              | `{ value: pitch in dB }`                        | Android, IOS
 
 <h2 align="center">Permissions</h2>
 
