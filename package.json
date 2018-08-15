@@ -3,7 +3,7 @@
   "version": "0.2.5",
   "description": "React Native Native Voice library for iOS and Android",
   "main": "index.js",
-  "author": "Sam Wenke <samwenke@gmail.com>",
+  "author": "Evgeniy Prokopiev <mepohta@gmail.com>",
   "peerDependencies": {
     "react-native": ">=0.40.0"
   },

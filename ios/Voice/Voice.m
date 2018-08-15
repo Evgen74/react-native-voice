@@ -23,7 +23,7 @@
 {
 }
 - (id) init{
-    
+
     self.rate = 0;
     return self;
 }
@@ -34,48 +34,55 @@
     if ([localeStr length] > 0) {
         locale = [NSLocale localeWithLocaleIdentifier:localeStr];
     }
-    
+
     if (locale) {
         self.speechRecognizer = [[SFSpeechRecognizer alloc] initWithLocale:locale];
     } else {
         self.speechRecognizer = [[SFSpeechRecognizer alloc] init];
     }
-    
+
     self.speechRecognizer.delegate = self;
-    
+
     NSError* audioSessionError = nil;
     self.audioSession = [AVAudioSession sharedInstance];
-    
+
+    if (self.audioSession) {
+        [self.audioSession setCategory:AVAudioSessionCategoryRecord error:nil];
+        [self.audioSession setMode:AVAudioSessionModeMeasurement error:nil];
+        [self.audioSession setActive:true withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+    }
+
+
     if (audioSessionError != nil) {
         [self sendResult:RCTMakeError([audioSessionError localizedDescription], nil, nil) :nil :nil :nil];
         self.flag=false;
         return;
     }
-    
+
     self.recognitionRequest = [[SFSpeechAudioBufferRecognitionRequest alloc] init];
-    
+
     if (self.recognitionRequest == nil){
         [self sendResult:RCTMakeError(@"Unable to created a SFSpeechAudioBufferRecognitionRequest object", nil, nil) :nil :nil :nil];
         self.flag=false;
         return;
     }
-    
+
     if (self.audioEngine == nil) {
         self.audioEngine = [[AVAudioEngine alloc] init];
     }
-    
+
     AVAudioInputNode* inputNode = self.audioEngine.inputNode;
     if (inputNode == nil) {
         [self sendResult:RCTMakeError(@"Audio engine has no input node", nil, nil) :nil :nil :nil];
         self.flag=false;
         return;
     }
-    
+
     // Configure request so that results are returned before audio recording is finished
     self.recognitionRequest.shouldReportPartialResults = YES;
-    
-    
-    
+
+
+
     // A recognition task represents a speech recognition session.
     // We keep a reference to the task so that it can be cancelled.
     self.recognitionTask = [self.speechRecognizer recognitionTaskWithRequest:self.recognitionRequest resultHandler:^(SFSpeechRecognitionResult * _Nullable result, NSError * _Nullable error) {
@@ -86,7 +93,7 @@
             self.flag=false;
             return;
         }
-        
+
         BOOL isFinal = result.isFinal;
         if (result != nil) {
             NSMutableArray* transcriptionDics = [NSMutableArray new];
@@ -95,7 +102,7 @@
             }
             [self sendResult:nil:result.bestTranscription.formattedString :transcriptionDics :@(isFinal)];
         }
-        
+
         if (isFinal == YES) {
             if (self.recognitionTask.isCancelled || self.recognitionTask.isFinishing){
                 [self sendEventWithName:@"onSpeechEnd" body:@{@"error": @false}];
@@ -106,16 +113,16 @@
     AVAudioMixerNode* tempNode = [[AVAudioMixerNode alloc] init];
     [self.audioEngine attachNode:tempNode];
     [self.audioEngine connect:inputNode to:tempNode format:nil];
-    
+
     AVAudioFormat* recordingFormat = [inputNode inputFormatForBus:0];
-    
+
     if(self.rate == 0){
         self.rate = [inputNode inputFormatForBus:0].sampleRate;
     }
     recordingFormat = [recordingFormat initStandardFormatWithSampleRate:self.rate channels:1];
-    
+
     [tempNode installTapOnBus:0 bufferSize:1024 format:recordingFormat block:^(AVAudioPCMBuffer * _Nonnull buffer, AVAudioTime * _Nonnull when) {
-        
+
         //===volume metering level====
         [buffer setFrameLength:1024];
         UInt32 inNumberFrames = buffer.frameLength;
@@ -124,32 +131,32 @@
         {
             Float32* samples = (Float32*)buffer.floatChannelData[0];
             Float32 avgValue = 0;
-            
+
             vDSP_meamgv((Float32*)samples, 1, &avgValue, inNumberFrames);
             self.averagePowerForChannel0 = (LEVEL_LOWPASS_TRIG*((avgValue==0)?-100:20.0*log10f(avgValue))) + ((1-LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel0) ;
             self.averagePowerForChannel1 = self.averagePowerForChannel0;
-            
+
         }
-        
+
         if(buffer.format.channelCount>1)
         {
             Float32* samples = (Float32*)buffer.floatChannelData[1];
             Float32 avgValue = 0;
-            
+
             vDSP_meamgv((Float32*)samples, 1, &avgValue, inNumberFrames);
             self.averagePowerForChannel1 = (LEVEL_LOWPASS_TRIG*((avgValue==0)?-100:20.0*log10f(avgValue))) + ((1-LEVEL_LOWPASS_TRIG)*self.averagePowerForChannel1) ;
-            
+
         }
         NSLog(@"===test===%.2f", self.averagePowerForChannel1);
         //===end volume metering level====
         NSNumber *value = [NSNumber numberWithFloat:self.averagePowerForChannel1];
         [self sendEventWithName:@"onSpeechVolumeLevel" body:@{@"level": value}];
-        
+
         if (self.recognitionRequest != nil) {
             [self.recognitionRequest appendAudioPCMBuffer:buffer];
         }
     }];
-    
+
     [self.audioEngine prepare];
     [self.audioEngine startAndReturnError:&audioSessionError];
     if (audioSessionError != nil) {
@@ -195,14 +202,19 @@
     [self.recognitionTask cancel];
     self.recognitionTask = nil;
     self.audioSession = nil;
-    
+
     if (self.audioEngine.isRunning) {
         [self.audioEngine stop];
         [self.recognitionRequest endAudio];
         [self.audioEngine.inputNode removeTapOnBus:0];
     }
-    
+
     self.recognitionRequest = nil;
+    AVAudioSession *avAudioSession = [AVAudioSession sharedInstance];
+    if (avAudioSession) {
+        [avAudioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+        [avAudioSession setMode:AVAudioSessionModeDefault error:nil];
+    }
 }
 
 // Called when the availability of the given recognizer changes
@@ -264,7 +276,7 @@ RCT_EXPORT_METHOD(startSpeech:(NSString*)localeStr callback:(RCTResponseSenderBl
         [self sendEventWithName:@"onSpeechStart" body:@[key]];
         return;
     }
-    
+
     [SFSpeechRecognizer requestAuthorization:^(SFSpeechRecognizerAuthorizationStatus status) {
         switch (status) {
             case SFSpeechRecognizerAuthorizationStatusNotDetermined:
