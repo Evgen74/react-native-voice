@@ -1,4 +1,4 @@
-[![npm][npm]][npm-url]
+[![npm](https://img.shields.io/npm/v/@evgen74/react-native-voice.svg)](https://npmjs.com/package/@evgen74/react-native-voice)
 [![deps][deps]][deps-url]
 
 <h1 align="center">React Native Voice</h1>
