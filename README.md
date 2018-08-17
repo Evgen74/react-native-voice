@@ -6,8 +6,10 @@
 <p align="center">A speech-to-text library for <a href="https://facebook.github.io/react-native/">React Native.</a></p>
 
 ```sh
-npm i react-native-voice --save
+npm i @evgen74/react-native-voice --save
 ```
+
+### It is a clone of this [repo](https://github.com/wenkesj/react-native-voice) but with a working definition of the volume level and without conflict with [react-native-tts](https://github.com/ak1394/react-native-tts)
 
 ## Table of contents
   * [Linking](#linking)
@@ -24,19 +26,13 @@ npm i react-native-voice --save
 
 <h2 align="center">Linking</h2>
 
-<p align="center">Manually or automatically link the NativeModule</p>
-
-```sh
-react-native link react-native-voice
-```
-
 ### Manually Link Android
 - In `android/setting.gradle`
 
 ```gradle
 ...
 include ':VoiceModule', ':app'
-project(':VoiceModule').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-voice/android')
+project(':VoiceModule').projectDir = new File(rootProject.projectDir, '../node_modules/@evgen74/react-native-voice/android')
 ```
 
 - In `android/app/build.gradle`
@@ -45,7 +41,7 @@ project(':VoiceModule').projectDir = new File(rootProject.projectDir, '../node_m
 ...
 dependencies {
     ...
-    compile project(':react-native-voice')
+    compile project(':@evgen74/react-native-voice')
 }
 ```
 
@@ -73,7 +69,7 @@ public class MainActivity extends ReactActivity {
 
 ### Manually Link iOS
 
-- Drag the Voice.xcodeproj from the react-native-voice/ios folder to the Libraries group on Xcode in your poject. [Manual linking](https://facebook.github.io/react-native/docs/linking-libraries-ios.html)
+- Drag the Voice.xcodeproj from the @evgen74/react-native-voice/ios folder to the Libraries group on Xcode in your poject. [Manual linking](https://facebook.github.io/react-native/docs/linking-libraries-ios.html)
 
 - Click on your main project file (the one that represents the .xcodeproj) select Build Phases and drag the static library, lib.Voice.a, from the Libraries/Voice.xcodeproj/Products folder to Link Binary With Libraries
 
@@ -85,7 +81,7 @@ public class MainActivity extends ReactActivity {
 ### Example
 
 ```javascript
-import Voice from 'react-native-voice';
+import Voice from '@evgen74/react-native-voice';
 import React, {Component} from 'react';
 
 class VoiceTest extends Component {

@@ -1,6 +1,6 @@
 {
   "name": "@evgen74/react-native-voice",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "React Native Native Voice library for iOS and Android",
   "main": "index.js",
   "author": "Evgeniy Prokopiev <mepohta@gmail.com>",
