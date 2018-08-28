@@ -319,7 +319,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
   public void onRmsChanged(float rmsdB) {
     WritableMap event = Arguments.createMap();
     event.putDouble("level", (double) rmsdB);
-    sendEvent("onSpeechVolumeChanged", event);
+    sendEvent("onSpeechVolumeLevel", event);
   }
 
   public static String getErrorText(int errorCode) {
