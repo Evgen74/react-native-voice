@@ -20,7 +20,7 @@ class RCTVoice {
       'onSpeechResults': this._onSpeechResults.bind(this),
       'onSpeechPartialResults': this._onSpeechPartialResults.bind(this),
       'onSpeechVolumeChanged': this._onSpeechVolumeChanged.bind(this),
-      'onSpeechVolumeLevel' : this._onSpeechVolumeLevel.bind(this),
+      'onSpeechVolumeLevel' : Platform.OS === 'android' ? this._onSpeechVolumeChanged.bind(this) : this._onSpeechVolumeLevel.bind(this),
     };
     voiceEmitter.addListener("onSpeechStart",this._onSpeechStart.bind(this));
   }

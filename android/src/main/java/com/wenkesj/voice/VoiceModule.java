@@ -318,7 +318,7 @@ public class VoiceModule extends ReactContextBaseJavaModule implements Recogniti
   @Override
   public void onRmsChanged(float rmsdB) {
     WritableMap event = Arguments.createMap();
-    event.putDouble("value", (double) rmsdB);
+    event.putDouble("level", (double) rmsdB);
     sendEvent("onSpeechVolumeChanged", event);
   }
 
